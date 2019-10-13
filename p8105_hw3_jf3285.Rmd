@@ -12,8 +12,8 @@ library(tidyverse)
 ```
 
 ## Problem 1
-This problem uses the Instacart data.
-```{r Instacart}
+This problem uses the Instacart data. The goal is to do some exploration of this dataset. 
+```{r}
 # load the data
 library(p8105.datasets)
 data("instacart") 
@@ -24,7 +24,7 @@ instacart %>%
   group_by(aisle_id, aisle) %>% 
   summarise(item_ordered_from_aisle=n()) %>% 
   
-  # make a plot that shows the number of items ordered in each aisle
+  # Q2: make a plot that shows the number of items ordered in each aisle
   # limit to aisles with more than 10000 items ordered
   filter(item_ordered_from_aisle > 10000) %>% 
   ggplot(aes(x = aisle_id, y = item_ordered_from_aisle)) + 
@@ -32,28 +32,44 @@ instacart %>%
   labs(title = "The number of items ordered in each aisle",
        x = "Aisle ID",
        y = "Number of Items Ordered") + theme(text = element_text(size=8))
+```
 
-# make a table showing the three most popular items in the specified aisles below
+Q1. There are 134 aisles. Aisle 83 (fresh vegetables, most) and aisle 24 (fresh fruits, second most) are the most items ordered from.  
+  Q2. The plot is shown above. Aisles are arranged by their respective IDs.
+  
+```{r}
+# load the data
+library(p8105.datasets)
+data("instacart") 
+
+# Q3: make a table showing the three most popular items in the specified aisles below
 instacart %>% 
   # limit to only three aisles
-  filter(aisle == c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
   # count the number of times each item is ordered
   group_by(aisle, product_name) %>%
-  summarise(number_of_times_item_ordered=n()) %>% 
+  summarize(number_of_times_item_ordered = n()) %>% 
+  # count(product_name, name = "number_of_times_item_ordered") %>% 
   # keep the three most popular items in each of the aisles
   filter(min_rank(desc(number_of_times_item_ordered)) < 4) %>% 
   knitr::kable()
+```
 
-# make a table showing the mean hour of the day at which the specified products are ordered on each day of the week
+```{r}
+# load the data
+library(p8105.datasets)
+data("instacart")
+
+# Q4: make a table showing the mean hour of the day at which the specified products below are ordered on each day of the week
 # change order_dow's data type to factor
 instacart$order_dow = as.factor(instacart$order_dow)
 instacart %>% 
-  # recode order_dow into each day of the week based on 0-6 = Sun to Sat
+  # recode order_dow into each day of the week based on 0-6 => Sun to Sat
   mutate(order_dow = recode(order_dow, 
                             "0" = "Sun", "1" = "Mon", "2" = "Tue", "3" = "Wed", 
                             "4" = "Thu", "5" = "Fri", "6" = "Sat")) %>% 
   # limit to only two products
-  filter(product_name == c("Pink Lady Apples", "Coffee Ice Cream")) %>% 
+  filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>% 
   # count the mean hour of the day at which they are ordered on each day of the week 
   group_by(order_dow, product_name) %>% 
   summarise(mean_hour = mean(order_hour_of_day)) %>% 
@@ -64,27 +80,29 @@ instacart %>%
   knitr::kable(digits = 1)
 ```
 
-The instacart dataset has 1384617 rows and 15 columns. Some key variables are...
-
-Q1. There are 134 aisles. Aisle 83 (fresh vegetables, most) and aisle 24 (fresh fruits, second most) are the most items ordered from.
+Dataset description: 
+The instacart dataset has 1384617 rows and 15 columns. The dataset is relatively tidy, given that each variable forms a column, each observation forms a row and each type of observational unit forms a table. Some key variables are add_to_cart_order - the order of the item being added to cart in each order, reordered - the number of times the item being ordered again, order_dow - the day of the week the item being ordered, order_hour_of_day - the hour of the day the item bring ordered, product_name - the name of the product, aisle - aisle name, department - department name, etc. For example, the order_dow ranges from (0, 6), representing Sunday to Saturday in a week; the order_hour_of_day ranges from (`r range(pull(instacart, order_hour_of_day))`), representing the 24 hours in a day. 
 
 ## Problem 2
-
-```{r BRFSS}
+This problem uses the BRFSS data. 
+```{r, message=FALSE}
 # load the data
 library(p8105.datasets)
 data("brfss_smart2010")
 
+# data cleaning
 # change response's data type to factor
 brfss_smart2010$Response = as.factor(brfss_smart2010$Response)
-# data cleaning
 tidy_data = 
 brfss_smart2010 %>% 
-  janitor::clean_names() %>% 
+  janitor::clean_names() %>%
+  # format the data to use appropriate variable names
+  rename(state = locationabbr,
+         county = locationdesc) %>% 
   # focus on the "Overall Health" topic
   filter(topic == "Overall Health") %>% 
   # include only responses from "Excellent" to "Poor"
-  filter (response == c("Excellent", "Very good", "Good", "Fair", "Poor")) %>% 
+  filter (response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) %>% 
   # organize responses as a factor taking levels ordered from “Poor” to “Excellent”
   mutate(response = forcats::fct_relevel(response, c("Poor", "Fair", "Good", "Very good", "Excellent"))) %>% 
   arrange(response)
@@ -96,8 +114,8 @@ tidy_data %>%
   # set year = 2002
   filter(year == 2002) %>% 
   # count the number of locations that each state was observed at
-  group_by(locationabbr) %>% 
-  summarise(number_of_locations = n()) %>% 
+  group_by(state) %>% 
+  summarise(number_of_locations = n_distinct(county)) %>% 
   # set observations at 7 or more locations
   filter(number_of_locations >= 7)
 # year 2010
@@ -105,24 +123,29 @@ tidy_data %>%
   # set tear = 2010
   filter(year == 2010) %>% 
   # count the number of locations that each state was observed at
-  group_by(locationabbr) %>% 
-  summarise(number_of_locations = n()) %>%
+  group_by(state) %>% 
+  summarise(number_of_locations = n_distinct(county)) %>%
   # set observations at 7 or more locations
   filter(number_of_locations >= 7)
 
 # Q2
+# construct a dataset that is limited to Excellent responses, and contains, year, state, and a variable that averages the data_value across locations within a state
+average_state_locations = 
 tidy_data %>% 
   # limit to Excellent responses
   filter(response == "Excellent") %>%
   # contain year, state
-  group_by(year, locationabbr) %>% 
+  group_by(year, state) %>% 
   # create a new variable that averages the data_value across locations within a state
-  summarise(avg_data_value = mean(data_value)) %>% 
-  # make a “spaghetti” plot of this average value over time within a state
-  # make a plot showing a line for each state across years
-  ggplot(aes(x = year, y = avg_data_value, color = locationabbr)) + 
+  summarise(avg_data_value = mean(data_value)) 
+average_state_locations
+
+# make a “spaghetti” plot of this average value over time within a state
+# make a plot showing a line for each state across years
+average_state_locations %>% 
+  ggplot(aes(x = year, y = avg_data_value, color = state)) + 
   geom_point() +
-  geom_line(aes(group = locationabbr)) + 
+  geom_line(aes(group = state)) + 
   labs(title = "Average value of locations within a state over time",
        x = "Year",
        y = "Average value of locations") + theme(text = element_text(size=10))
@@ -131,23 +154,23 @@ tidy_data %>%
 # make a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State
 tidy_data %>% 
   # set year = 2006 and 2010
-  filter(year == c(2006, 2010)) %>% 
+  filter(year %in% c(2006, 2010)) %>% 
   # set location in NY State
-  filter(locationabbr == "NY") %>% 
+  filter(state == "NY") %>% 
   # two-panel plot
-  ggplot(aes(x = response, y = data_value, color = locationdesc)) +
-  geom_point() + 
+  ggplot(aes(x = response, y = data_value)) +
+  geom_boxplot() + 
   labs(title = "Distribution of data_value for responses among locations in NY state",
        x = "response",
-       y = "data_value") + theme(text = element_text(size=8)) +
+       y = "data_value") + theme(text = element_text(size=10)) +
   facet_grid(~year)
 ```
 
-Q1. In 2002, 21 states were observed at 7 or more locations, including CT, DE, FL, ID, IL, IN, MA, MD, MI, NE, NH, NJ, NV, NY, OH, OK, PA, RI, SC, UT and WA.   
-    In 2010, 38 states were observed at 7 or more locations, including AL, AR, AZ, CA, CO, DE, FL, ID, IN, KS, LA, MA, MD, ME, MI, MN, MO, MT, NC, NE, NH, NJ, NM, NV, NY, OH, OK,OR, PA, RI, SC, SD, TN, TX, UT, VT, WA AND WY. 
+Q1. In 2002, 6 states were observed at 7 or more locations, including CT, FL, MA, NC, NJ, PA. In 2010, 14 states were observed at 7 or more locations, including CA, CO, FL, MA, MD, NC, NE, NJ, NY OH, PA, SC, TX, WA.
 
 ## Problem 3
-```{r accelerometer, message = FALSE}
+This problem uses five weeks of accelerometer data collected on a 63 year-old male with BMI 25. 
+```{r, message=FALSE}
 accel_data = 
   # load, tidy the data
   read_csv("data/accel_data.csv") %>%
@@ -155,17 +178,84 @@ accel_data =
   # include a weekday vs weekend variable
   mutate(weekday_vs_weekend =
          ifelse(day %in% c("Saturday", "Sunday"), "weekend", "weekday")) %>% 
+  # include all originally observed variables and values 
   select(week, day_id, day, weekday_vs_weekend, everything())
-accel_data
 
+# aggregate across minutes to create a total activity variable for each day
+# create a table showing these totals
 accel_data %>%  
   mutate(total_activity_daily = rowSums(.[5:1444])) %>% 
-  select(week, day_id, day, weekday_vs_weekend, total_activity_daily)
-  
+  select(week, day_id, day, weekday_vs_weekend, total_activity_daily) %>% 
+  knitr::kable()
 
+# tidied dataset
+# change the wider format to longer
+# create a new variable "minute" to replace the activity for each minute, and a new variable "activity" to represent the corresponding activity count
+clean_data = 
+  pivot_longer(accel_data, cols = activity_1:activity_1440,
+               names_to = "minute",
+               values_to = "activity"
+               ) %>% 
+  # "activity_" is removed from the entire minute column to reflect time (minutes)
+  mutate_all(~gsub("activity_", "", .)) %>% 
+  # change the data type for week and day_id to numeric
+  mutate(week = as.numeric(week),
+         day_id = as.numeric(day_id)) %>% 
+  # change the data type for minute and activity to numeric
+  mutate(minute = as.numeric(minute),
+         activity = as.numeric(activity)) %>% 
+  select(week, day_id, day, weekday_vs_weekend, everything()) %>% 
+  # group by each day
+  group_by(day_id)
+clean_data
 
+# create a new dataset to reformat the tidied dataset
+data_by_hour = 
+  clean_data %>%
+  # minute is transformed to hour using quotient
+  # 1440 minutes -> 24 hours
+  mutate(hour = minute%/%60) %>% 
+  # create a unique day variable
+  mutate(unique_day = paste0("Week ",week,": ",day)) %>%
+  group_by(week, day, unique_day, hour) %>% 
+  # sum the hourly activity 
+  mutate(hourly_activity = sum(activity)) %>% 
+  select(day, unique_day, hour, hourly_activity) %>% 
+  # remove duplicate rows
+  distinct() 
 
-  
-  
+# create five different datasets for Week 1 to 5
+wk1 = 
+data_by_hour %>% 
+  filter (week == 1)
 
+wk2 = 
+  data_by_hour %>% 
+  filter (week == 2)
+
+wk3 = data_by_hour %>% 
+  filter (week == 3)
+
+wk4 = data_by_hour %>% 
+  filter (week == 4) 
+
+wk5 = data_by_hour %>% 
+  filter (week == 5)
+
+# make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week
+# 35 lines - 35 days in total
+# 7 legends - group by day of the week
+ggplot() +
+geom_line(wk1, mapping = aes(x = hour, y = hourly_activity, color = day)) +
+geom_line(wk2, mapping = aes(x = hour, y = hourly_activity, color = day)) +
+geom_line(wk3, mapping = aes(x = hour, y = hourly_activity, color = day)) +
+geom_line(wk4, mapping = aes(x = hour, y = hourly_activity, color = day)) +
+geom_line(wk5, mapping = aes(x = hour, y = hourly_activity, color = day)) +
+labs(title = "24-Hour Activity Time Courses For Each Day",
+       x = "Hour",
+       y = "Activity") + theme(text = element_text(size=12)) 
 ```
+
+Q1. The final dataset includes the week number from 1 to 5 [dbl], the day_id from 1 to 7 representing the seven days in week [dbl], the day of the week from Monday to Sunday [chr], the weekday vs weekend variable representing if the day is weekday or weekend [chr], minute representing the minute of a day [dbl], and minute activity [dbl].  
+  Q2. In the table that shows total activity over the day, there are not many apparent trends. But it can be easily seen that the total activities for Week 1 Monday, Week 4 Saturday and Week 5 Saturday are extremely low compared to those of other days.  
+    Q3. In the plot that shows the 24-hour activity time courses for each day, it can be seen that the peaks of activity for each day are around Thursday at 6am, Sunday at 11am, Saturday at 16pm, and Monday and Friday at 20pm. 
