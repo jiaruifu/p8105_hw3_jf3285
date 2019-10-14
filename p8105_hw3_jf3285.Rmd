@@ -16,7 +16,8 @@ This problem uses the Instacart data. The goal is to do some exploration of this
 ```{r}
 # load the data
 library(p8105.datasets)
-data("instacart") 
+data("instacart")
+instacart
 
 instacart %>% 
   # Q1: How many aisles are there, and which aisles are the most items ordered from?
@@ -81,7 +82,10 @@ instacart %>%
 ```
 
 Dataset description: 
-The instacart dataset has 1384617 rows and 15 columns. The dataset is relatively tidy, given that each variable forms a column, each observation forms a row and each type of observational unit forms a table. Some key variables are add_to_cart_order - the order of the item being added to cart in each order, reordered - the number of times the item being ordered again, order_dow - the day of the week the item being ordered, order_hour_of_day - the hour of the day the item bring ordered, product_name - the name of the product, aisle - aisle name, department - department name, etc. For example, the order_dow ranges from (0, 6), representing Sunday to Saturday in a week; the order_hour_of_day ranges from (`r range(pull(instacart, order_hour_of_day))`), representing the 24 hours in a day. 
+The instacart dataset has 1384617 rows and 15 columns. The dataset is relatively tidy, given that each variable forms a column, each observation forms a row and each type of observational unit forms a table. Some key variables are add_to_cart_order - the order of the item being added to cart in each order, reordered - the number of times the item being ordered again, order_dow - the day of the week the item being ordered, order_hour_of_day - the hour of the day the item bring ordered, product_name - the name of the product, aisle - aisle name, department - department name, etc. 
+
+For example, the order_dow ranges [] from (0, 6), representing Sunday to Saturday in a week; the mean of the order_dow
+the order_hour_of_day ranges from (`r range(pull(instacart, order_hour_of_day))`), representing the 24 hours in a day. 
 
 ## Problem 2
 This problem uses the BRFSS data. 
@@ -256,6 +260,6 @@ labs(title = "24-Hour Activity Time Courses For Each Day",
        y = "Activity") + theme(text = element_text(size=12)) 
 ```
 
-Q1. The final dataset includes the week number from 1 to 5 [dbl], the day_id from 1 to 7 representing the seven days in week [dbl], the day of the week from Monday to Sunday [chr], the weekday vs weekend variable representing if the day is weekday or weekend [chr], minute representing the minute of a day [dbl], and minute activity [dbl].  
-  Q2. In the table that shows total activity over the day, there are not many apparent trends. But it can be easily seen that the total activities for Week 1 Monday, Week 4 Saturday and Week 5 Saturday are extremely low compared to those of other days.  
-    Q3. In the plot that shows the 24-hour activity time courses for each day, it can be seen that the peaks of activity for each day are around Thursday at 6am, Sunday at 11am, Saturday at 16pm, and Monday and Friday at 20pm. 
+Q1. The final dataset includes the week number from 1 to 5 representing the five weeks throughout the study [dbl], the day_id from 1 to 7 representing the seven days in week [dbl], the day of the week from Monday to Sunday [chr], the weekday vs weekend variable representing if the day is weekday or weekend [chr], minute representing the minute of a day [dbl], and minute activity level [dbl].  
+  Q2. In the table that shows total activity by each day, there are not many apparent trends. But it can be easily seen that the total activities for Week 1 Monday, Week 4 Saturday and Week 5 Saturday are extremely low compared to those of other days.  
+    Q3. In the plot that shows the 24-hour activity time courses for each day, it can be seen that there are about four peaks during the five-week study where the peaks of activity for each day are around Thursday at 6am, Sunday at 11am, Saturday at 16pm, and Monday and Friday at 20pm. 
