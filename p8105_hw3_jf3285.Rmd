@@ -24,6 +24,7 @@ instacart
 instacart %>% 
   # Q1: How many aisles are there, and which aisles are the most items ordered from?
   # count the number of times each aisle is ordered
+  mutate(order_dow = as.factor(order_dow)) %>% 
   group_by(aisle_id, aisle) %>% 
   summarise(item_ordered_from_aisle=n()) %>% 
   
@@ -37,7 +38,7 @@ instacart %>%
        y = "Number of Items Ordered") + theme(text = element_text(size=8))
 ```
 
-Q3. The table is shown below. The three most popular items in aisle baking ingredients are: Light Brown Sugar, Pure Baking Soda, Cane Sugar (list by the number of times each item is ordered). The three most popular items in aisle dog food care are: Snack Sticks Chicken & Rice Recipe Dog Treats, Organix Chicken & Brown Rice Recipe, and Small Dog Biscuits (list by the number of times each item is ordered). The three most popular items in aisle packaged vegetable fruits are: Organic Baby Spinach, Organic Raspberries and Organic Blueberries (list by the number of times each item is ordered).
+Q3. The table is shown below. The three most popular items in aisle baking ingredients are: Light Brown Sugar, Pure Baking Soda, Cane Sugar (list by the number of times each item is ordered). The three most popular items in aisle dog food care are: Snack Sticks Chicken & Rice Recipe Dog Treats, Organix Chicken & Brown Rice Recipe, and Small Dog Biscuits (list by the number of times each item is ordered). The three most popular items in aisle packaged vegetable fruits are: Organic Baby Spinach, Organic Raspberries and Organic Blueberries (list by the number of times each item is ordered). Overall, the number of times items in aisle packaged vegetable fruits are ordered are much higher than the number of times items in aisle baking ingredients and dog food care are ordered.
 ```{r}
 # load the data
 library(p8105.datasets)
@@ -56,6 +57,7 @@ instacart %>%
   knitr::kable()
 ```
 
+Q4. The table is shown below. The mean hour of the day at which Coffee Ice Cream are ordered on each day of the week is 13.8, 14.3, 15.4, 15.3, 15.2, 12.3, 13.8 from Sunday to Saturday. The mean hour of the day at which Pink Lady Apples are ordered on each day of the week is 13.4, 11.4, 11.7, 14.2, 11.6, 12.8, 11.9 from Sunday to Saturday. Generally, the mean hour of the day at which Coffee Ice Cream is ordered on each day of the week is later than that of Pink Lady Apples. 
 ```{r}
 # load the data
 library(p8105.datasets)
@@ -82,10 +84,9 @@ instacart %>%
 ```
 
 Dataset description: 
-The instacart dataset has 1384617 rows and 15 columns. The dataset is relatively tidy, given that each variable forms a column, each observation forms a row and each type of observational unit forms a table. Some key variables are add_to_cart_order - the order of the item being added to cart in each order, reordered - the number of times the item being ordered again, order_dow - the day of the week the item being ordered, order_hour_of_day - the hour of the day the item bring ordered, product_name - the name of the product, aisle - aisle name, department - department name, etc. 
+The instacart dataset has 1384617 rows and 15 columns. The dataset is relatively tidy, given that each variable forms a column, each observation forms a row and each type of observational unit forms a table. Some key variables are add_to_cart_order - the order of the item being added to cart in each order, reordered - the number of times the item being ordered again, order_dow - the day of the week the item being ordered, order_hour_of_day - the hour of the day the item being ordered, days_since_prior_order - the number of days the item being reordered again since its last order, product_name - the name of the product, aisle_id - the aisle number, department_id - the department number, aisle - aisle name, department - department name, etc. 
 
-For example, the order_dow ranges [] from (0, 6), representing Sunday to Saturday in a week. 
-The order_hour_of_day ranges from (`r range(pull(instacart, order_hour_of_day))`), representing the 24 hours in a day. 
+For example, the order_dow [fctr] ranges from (0, 6), representing Sunday to Saturday in a week. The order_hour_of_day [int] ranges from (`r range(pull(instacart, order_hour_of_day))`), representing the 24 hours in a day; the mean order_hour_of_day is `r mean(pull(instacart, order_hour_of_day))` with a standard deviation of `r sd(pull(instacart, order_hour_of_day))` and the median order_hour_of_day is `r median(pull(instacart, order_hour_of_day))`. The days_since_prior_order [int] ranges from (`r range(pull(instacart, days_since_prior_order))`); the mean days_since_prior_order [int] ranges from `r mean(pull(instacart, days_since_prior_order))` with a standard deviation of `r sd(pull(instacart, days_since_prior_order))` and the median days_since_prior_order is `r median(pull(instacart, days_since_prior_order))`.
 
 ## Problem 2
 This problem uses the BRFSS data. 
