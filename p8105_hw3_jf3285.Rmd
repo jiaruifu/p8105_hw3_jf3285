@@ -13,18 +13,16 @@ library(tidyverse)
 
 ## Problem 1
 This problem uses the Instacart data. The goal is to do some exploration of this dataset.  
-Q1. There are 134 aisles. Aisle 83 (fresh vegetables, most) and aisle 24 (fresh fruits, second most) are the most items ordered from.  
+Q1. There are 134 aisles. Aisle 83 (fresh vegetables, first most) and aisle 24 (fresh fruits, second most) are the most items ordered from.  
   Q2. The plot is shown below. Aisles are arranged by their respective IDs. It can be seen that the two aisles with the most number of items ordered are fresh vegetables and fresh fruits, which corresponds to the finding in Q1.
 ```{r}
 # load the data
 library(p8105.datasets)
 data("instacart")
-instacart
 
 instacart %>% 
   # Q1: How many aisles are there, and which aisles are the most items ordered from?
   # count the number of times each aisle is ordered
-  mutate(order_dow = as.factor(order_dow)) %>% 
   group_by(aisle_id, aisle) %>% 
   summarise(item_ordered_from_aisle=n()) %>% 
   
@@ -84,12 +82,13 @@ instacart %>%
 ```
 
 Dataset description: 
-The instacart dataset has 1384617 rows and 15 columns. The dataset is relatively tidy, given that each variable forms a column, each observation forms a row and each type of observational unit forms a table. Some key variables are add_to_cart_order - the order of the item being added to cart in each order, reordered - the number of times the item being ordered again, order_dow - the day of the week the item being ordered, order_hour_of_day - the hour of the day the item being ordered, days_since_prior_order - the number of days the item being reordered again since its last order, product_name - the name of the product, aisle_id - the aisle number, department_id - the department number, aisle - aisle name, department - department name, etc. 
+The instacart dataset has 1384617 rows and 15 columns. The dataset is relatively tidy, given that each variable forms a column, each observation forms a row and each type of observational unit forms a table. Some key variables are add_to_cart_order[int] - the order of the item being added to cart in each order, reordered[int]- the number of times the item being ordered again, order_dow[int] - the day of the week the item being ordered, order_hour_of_day[int] - the hour of the day the item being ordered, days_since_prior_order[int] - the number of days the item being reordered again since its last order, aisle_id[int] - the aisle number, department_id[int] - the department number, aisle[chr] - aisle name, department[chr] - department name, product_name[chr] - the name of the product, etc. 
 
-For example, the order_dow [fctr] ranges from (0, 6), representing Sunday to Saturday in a week. The order_hour_of_day [int] ranges from (`r range(pull(instacart, order_hour_of_day))`), representing the 24 hours in a day; the mean order_hour_of_day is `r mean(pull(instacart, order_hour_of_day))` with a standard deviation of `r sd(pull(instacart, order_hour_of_day))` and the median order_hour_of_day is `r median(pull(instacart, order_hour_of_day))`. The days_since_prior_order [int] ranges from (`r range(pull(instacart, days_since_prior_order))`); the mean days_since_prior_order [int] ranges from `r mean(pull(instacart, days_since_prior_order))` with a standard deviation of `r sd(pull(instacart, days_since_prior_order))` and the median days_since_prior_order is `r median(pull(instacart, days_since_prior_order))`.
+For example, the order_dow ranges from (0, 6), representing Sunday to Saturday in a week. The order_hour_of_day ranges from (`r range(pull(instacart, order_hour_of_day))`), representing the 24 hours in a day; the mean order_hour_of_day is `r mean(pull(instacart, order_hour_of_day))` with a standard deviation of `r sd(pull(instacart, order_hour_of_day))` and the median order_hour_of_day is `r median(pull(instacart, order_hour_of_day))`. The days_since_prior_order ranges from (`r range(pull(instacart, days_since_prior_order))`); the mean days_since_prior_order is `r mean(pull(instacart, days_since_prior_order))` with a standard deviation of `r sd(pull(instacart, days_since_prior_order))` and the median days_since_prior_order is `r median(pull(instacart, days_since_prior_order))`.
 
 ## Problem 2
-This problem uses the BRFSS data. 
+This problem uses the BRFSS data.  
+  Q1. In 2002, 6 states were observed at 7 or more locations, including CT, FL, MA, NC, NJ, PA. In 2010, 14 states were observed at 7 or more locations, including CA, CO, FL, MA, MD, NC, NE, NJ, NY OH, PA, SC, TX, WA.
 ```{r, message=FALSE}
 # load the data
 library(p8105.datasets)
@@ -171,8 +170,6 @@ tidy_data %>%
   facet_grid(~year)
 ```
 
-Q1. In 2002, 6 states were observed at 7 or more locations, including CT, FL, MA, NC, NJ, PA. In 2010, 14 states were observed at 7 or more locations, including CA, CO, FL, MA, MD, NC, NE, NJ, NY OH, PA, SC, TX, WA.
-
 ## Problem 3
 This problem uses five weeks of accelerometer data collected on a 63 year-old male with BMI 25. 
 ```{r, message=FALSE}
@@ -205,7 +202,10 @@ clean_data =
   mutate_all(~gsub("activity_", "", .)) %>% 
   # change the data type for week and day_id to numeric
   mutate(week = as.numeric(week),
-         day_id = as.numeric(day_id)) %>% 
+         day_id = as.numeric(day_id)) %>%
+   # change the data type for day and weekday_vs_weekend to factor
+  mutate(day = as.factor(day),
+         weekday_vs_weekend = as.factor(weekday_vs_weekend)) %>%
   # change the data type for minute and activity to numeric
   mutate(minute = as.numeric(minute),
          activity = as.numeric(activity)) %>% 
@@ -261,6 +261,6 @@ labs(title = "24-Hour Activity Time Courses For Each Day",
        y = "Activity") + theme(text = element_text(size=12)) 
 ```
 
-Q1. The final dataset includes the week number from 1 to 5 representing the five weeks throughout the study [dbl], the day_id from 1 to 7 representing the seven days in week [dbl], the day of the week from Monday to Sunday [chr], the weekday vs weekend variable representing if the day is weekday or weekend [chr], minute representing the minute of a day [dbl], and minute activity level [dbl].  
-  Q2. In the table that shows total activity by each day, there are not many apparent trends. But it can be easily seen that the total activities for Week 1 Monday, Week 4 Saturday and Week 5 Saturday are extremely low compared to those of other days.  
+Q1. The final dataset includes the week number from 1 to 5 representing the 5 weeks in the study [dbl], the day_id from 1 to 35 representing the  35 days in the study [dbl], the day representing the day of the week from Monday to Sunday [fctr], the weekday vs weekend variable representing if the day is weekday or weekend [fctr], minute representing the minute of a day from 1 to 1440 for each day [dbl], and minute activity [dbl]. The mean minute activity is `r mean(pull(clean_data, activity))` with a standard deviation of `r sd(pull(clean_data, activity))` and the median minute activity is `r median(pull(clean_data, activity))`.  
+  Q2. In the table that shows the total activity by each day of the week, there are not many apparent trends. But it can be easily seen that the total activities for Week 1 Monday, Week 4 Saturday and Week 5 Saturday are extremely low compared to those of other days.  
     Q3. In the plot that shows the 24-hour activity time courses for each day, it can be seen that there are about four peaks during the five-week study where the peaks of activity for each day are around Thursday at 6am, Sunday at 11am, Saturday at 16pm, and Monday and Friday at 20pm. 
