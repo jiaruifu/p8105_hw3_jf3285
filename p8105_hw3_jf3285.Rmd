@@ -12,7 +12,10 @@ library(tidyverse)
 ```
 
 ## Problem 1
-This problem uses the Instacart data. The goal is to do some exploration of this dataset. 
+This problem uses the Instacart data. The goal is to do some exploration of this dataset.  
+  
+Q1. There are 134 aisles. Aisle 83 (fresh vegetables, most) and aisle 24 (fresh fruits, second most) are the most items ordered from.  
+  Q2. The plot is shown above. Aisles are arranged by their respective IDs. It can be seen that the two aisles with the most number of items ordered are fresh vegetables and fresh fruits, which corresponds to the finding in Q1.
 ```{r}
 # load the data
 library(p8105.datasets)
@@ -35,9 +38,6 @@ instacart %>%
        y = "Number of Items Ordered") + theme(text = element_text(size=8))
 ```
 
-Q1. There are 134 aisles. Aisle 83 (fresh vegetables, most) and aisle 24 (fresh fruits, second most) are the most items ordered from.  
-  Q2. The plot is shown above. Aisles are arranged by their respective IDs.
-  
 ```{r}
 # load the data
 library(p8105.datasets)
@@ -84,8 +84,8 @@ instacart %>%
 Dataset description: 
 The instacart dataset has 1384617 rows and 15 columns. The dataset is relatively tidy, given that each variable forms a column, each observation forms a row and each type of observational unit forms a table. Some key variables are add_to_cart_order - the order of the item being added to cart in each order, reordered - the number of times the item being ordered again, order_dow - the day of the week the item being ordered, order_hour_of_day - the hour of the day the item bring ordered, product_name - the name of the product, aisle - aisle name, department - department name, etc. 
 
-For example, the order_dow ranges [] from (0, 6), representing Sunday to Saturday in a week; the mean of the order_dow
-the order_hour_of_day ranges from (`r range(pull(instacart, order_hour_of_day))`), representing the 24 hours in a day. 
+For example, the order_dow ranges [] from (0, 6), representing Sunday to Saturday in a week. 
+The order_hour_of_day ranges from (`r range(pull(instacart, order_hour_of_day))`), representing the 24 hours in a day. 
 
 ## Problem 2
 This problem uses the BRFSS data. 
