@@ -13,9 +13,8 @@ library(tidyverse)
 
 ## Problem 1
 This problem uses the Instacart data. The goal is to do some exploration of this dataset.  
-  
 Q1. There are 134 aisles. Aisle 83 (fresh vegetables, most) and aisle 24 (fresh fruits, second most) are the most items ordered from.  
-  Q2. The plot is shown above. Aisles are arranged by their respective IDs. It can be seen that the two aisles with the most number of items ordered are fresh vegetables and fresh fruits, which corresponds to the finding in Q1.
+  Q2. The plot is shown below. Aisles are arranged by their respective IDs. It can be seen that the two aisles with the most number of items ordered are fresh vegetables and fresh fruits, which corresponds to the finding in Q1.
 ```{r}
 # load the data
 library(p8105.datasets)
@@ -38,6 +37,7 @@ instacart %>%
        y = "Number of Items Ordered") + theme(text = element_text(size=8))
 ```
 
+Q3. The table is shown below. The three most popular items in aisle baking ingredients are: Light Brown Sugar, Pure Baking Soda, Cane Sugar (list by the number of times each item is ordered). The three most popular items in aisle dog food care are: Snack Sticks Chicken & Rice Recipe Dog Treats, Organix Chicken & Brown Rice Recipe, and Small Dog Biscuits (list by the number of times each item is ordered). The three most popular items in aisle packaged vegetable fruits are: Organic Baby Spinach, Organic Raspberries and Organic Blueberries (list by the number of times each item is ordered).
 ```{r}
 # load the data
 library(p8105.datasets)
